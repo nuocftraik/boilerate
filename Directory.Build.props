@@ -4,12 +4,13 @@
 		<AnalysisMode>All</AnalysisMode>
 		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+		<NoWarn>$(NoWarn);SA1600;SA1633;SA1101;SA1502;SA1313;SA1128;SA1413;SA1629;SA1611;SA1615;SA1503;CA1002;CA1062;IDE0011;CS1591</NoWarn>
 	</PropertyGroup>
 	
 	<ItemGroup>
 		<PackageReference
 			Include="StyleCop.Analyzers"
-			Version="1.1.118"
+			Version="1.2.0-beta.556"
 			PrivateAssets="all"
 			Condition="$(MSBuildProjectExtension) == '.csproj'"
 		/>
