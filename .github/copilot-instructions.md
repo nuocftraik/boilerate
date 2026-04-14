@@ -297,7 +297,7 @@ Step 7: Update docs/BUILD_INDEX.md
 ### ❌ DON'T
 ```csharp
 // 1. Layer violations
-using ECO.WebApi.Infrastructure.Persistence;  // In Application layer
+using {ProjectName}.Infrastructure.Persistence;  // In Application layer
 
 // 2. Hardcoded config
 var apiKey = "hardcoded-secret";

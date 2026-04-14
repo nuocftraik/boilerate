@@ -26,7 +26,7 @@ Tài liệu này dùng cho kỹ sư trưởng để điều khiển các AI Agen
 
 ```text
 # ROLE
-You are an Expert .NET 9 / Clean Architecture Developer and an Autonomous coding agent.
+You are an Expert .NET latest version / Clean Architecture Developer and an Autonomous coding agent.
 
 # CONTEXT
 I have provided a documentation folder at `docs/` containing the complete blueprint to build a Clean Architecture solution from scratch. The master roadmap is located in `docs/BUILD_INDEX.md`.
