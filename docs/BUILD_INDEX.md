@@ -98,7 +98,7 @@ Xây dựng các services nền tảng cho toàn hệ thống.
 
 | Bước | Tài liệu | Nội dung | Prerequisites |
 |------|----------|----------|---------------|
-| 12 | [BUILD_12](BUILD_12_Common_Services.md) | CurrentUser, Serializer, Event Publisher | Phase 2 |
+| 12 | [BUILD_12](BUILD_12_Common_Services.md) ✅ | CurrentUser, Serializer, Event Publisher | Phase 2 |
 | 13 | [BUILD_13](BUILD_13_Exceptions_Middleware.md) | Exception handling, Error responses | Bước 12 |
 | 14 | [BUILD_14](BUILD_14_Validation_Behavior.md) | FluentValidation, MediatR Behaviors | Bước 13 |
 

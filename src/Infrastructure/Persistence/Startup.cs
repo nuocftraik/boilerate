@@ -61,7 +61,16 @@ internal static class Startup
             services.AddScoped(
                 typeof(IReadRepository<>).MakeGenericType(aggregateRootType),
                 sp => sp.GetRequiredService(typeof(IRepository<>).MakeGenericType(aggregateRootType)));
+
+            // IRepositoryWithEvents<T> -> EventAddingRepositoryDecorator wrapping IRepository
+            services.AddScoped(
+                typeof(IRepositoryWithEvents<>).MakeGenericType(aggregateRootType),
+                sp => Activator.CreateInstance(
+                    typeof(EventAddingRepositoryDecorator<>).MakeGenericType(aggregateRootType),
+                    sp.GetRequiredService(typeof(IRepository<>).MakeGenericType(aggregateRootType)))
+                ?? throw new InvalidOperationException($"Could not create EventAddingRepositoryDecorator for {aggregateRootType.Name}"));
         }
+
 
         return services;
     }

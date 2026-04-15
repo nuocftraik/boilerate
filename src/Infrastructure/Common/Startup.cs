@@ -11,6 +11,7 @@ internal static class Startup
             .AddServices(typeof(IScopedService), ServiceLifetime.Scoped)
             .AddServices(typeof(ISingletonService), ServiceLifetime.Singleton);
 
+
     internal static IServiceCollection AddServices(this IServiceCollection services, Type interfaceType, ServiceLifetime lifetime)
     {
         var interfaceTypes =

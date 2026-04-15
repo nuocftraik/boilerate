@@ -19,3 +19,12 @@ public interface IReadRepository<T> : IReadRepositoryBase<T>
 {
 }
 
+/// <summary>
+/// Repository tự động thêm Domain Events khi Add/Update/Delete.
+/// </summary>
+public interface IRepositoryWithEvents<T> : IRepositoryBase<T>
+    where T : class, IAggregateRoot
+{
+}
+
+
