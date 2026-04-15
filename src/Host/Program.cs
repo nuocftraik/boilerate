@@ -40,6 +40,9 @@ try
     app.UseInfrastructure(builder.Configuration);
     app.MapEndpoints();
 
+    // Khởi tạo Database: apply migrations + seed data
+    await app.Services.InitializeDatabasesAsync();
+
     Log.Information("Application Starting...");
     await app.RunAsync();
 }

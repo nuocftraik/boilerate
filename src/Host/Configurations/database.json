@@ -1,6 +1,6 @@
 {
   "DatabaseSettings": {
     "DBProvider": "mssql",
-    "ConnectionString": "Server=localhost;Database=BoilerateDb;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true"
+    "ConnectionString": "Server=NGUYENVANVUONG\\SQLEXPRESS;Database=BoilerateDb;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true"
   }
 }

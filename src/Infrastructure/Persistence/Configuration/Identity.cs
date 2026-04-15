@@ -61,3 +61,73 @@ public class IdentityUserTokenConfig : IEntityTypeConfiguration<IdentityUserToke
         builder.ToTable("UserTokens", SchemaNames.Identity);
     }
 }
+
+public class ActionConfig : IEntityTypeConfiguration<Domain.Identity.Action>
+{
+    public void Configure(EntityTypeBuilder<Domain.Identity.Action> builder)
+    {
+        builder.ToTable("Actions", SchemaNames.Identity);
+        builder.HasKey(a => a.Id);
+        builder.Property(a => a.Name).IsRequired().HasMaxLength(100);
+        builder.HasIndex(a => a.Name).IsUnique();
+    }
+}
+
+public class FunctionConfig : IEntityTypeConfiguration<Function>
+{
+    public void Configure(EntityTypeBuilder<Function> builder)
+    {
+        builder.ToTable("Functions", SchemaNames.Identity);
+        builder.HasKey(f => f.Id);
+        builder.Property(f => f.Name).IsRequired().HasMaxLength(100);
+        builder.HasIndex(f => f.Name).IsUnique();
+    }
+}
+
+public class ActionInFunctionConfig : IEntityTypeConfiguration<ActionInFunction>
+{
+    public void Configure(EntityTypeBuilder<ActionInFunction> builder)
+    {
+        builder.ToTable("ActionInFunctions", SchemaNames.Identity);
+
+        // Composite key: mỗi cặp (Action, Function) chỉ xuất hiện duy nhất 1 lần
+        builder.HasKey(aif => new { aif.ActionId, aif.FunctionId });
+
+        builder.HasOne(aif => aif.Action)
+            .WithMany()
+            .HasForeignKey(aif => aif.ActionId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(aif => aif.Function)
+            .WithMany()
+            .HasForeignKey(aif => aif.FunctionId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
+public class PermissionConfig : IEntityTypeConfiguration<Permission>
+{
+    public void Configure(EntityTypeBuilder<Permission> builder)
+    {
+        builder.ToTable("Permissions", SchemaNames.Identity);
+        builder.HasKey(p => p.Id);
+
+        // Tránh duplicate: một Role chỉ có 1 permission cho 1 cặp (Function, Action)
+        builder.HasIndex(p => new { p.RoleId, p.FunctionId, p.ActionId }).IsUnique();
+
+        builder.HasOne(p => p.Role)
+            .WithMany()
+            .HasForeignKey(p => p.RoleId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(p => p.Function)
+            .WithMany()
+            .HasForeignKey(p => p.FunctionId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(p => p.Action)
+            .WithMany()
+            .HasForeignKey(p => p.ActionId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
+}
