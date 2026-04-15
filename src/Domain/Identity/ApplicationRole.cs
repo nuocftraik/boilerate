@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using Boilerate.Domain.Common.Contracts;
 using Microsoft.AspNetCore.Identity;
 
 namespace Boilerate.Domain.Identity;
 
-public class ApplicationRole : IdentityRole
+public class ApplicationRole : IdentityRole, IEntity
 {
     public ApplicationRole() { }
     
@@ -13,4 +15,7 @@ public class ApplicationRole : IdentityRole
     }
 
     public string? Description { get; set; }
+
+    [NotMapped]
+    public List<DomainEvent> DomainEvents { get; } = new();
 }

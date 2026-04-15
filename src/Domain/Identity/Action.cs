@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Boilerate.Domain.Common.Contracts;
 
 namespace Boilerate.Domain.Identity;
 
@@ -6,11 +7,8 @@ namespace Boilerate.Domain.Identity;
 /// Đại diện một hành động trong hệ thống phân quyền (View, Create, Update, Delete...).
 /// Dữ liệu được seed tự động từ Shared/Authorization/AppAction constants.
 /// </summary>
-public class Action
+public class Action : BaseEntity
 {
-    [Key]
-    public Guid Id { get; set; } = Guid.NewGuid();
-
     [Required]
     [MaxLength(100)]
     public string Name { get; set; } = default!;

@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using Boilerate.Domain.Common.Contracts;
 using Microsoft.AspNetCore.Identity;
 
 namespace Boilerate.Domain.Identity;
 
-public class ApplicationUser : IdentityUser
+public class ApplicationUser : IdentityUser, IEntity
 {
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
@@ -11,4 +13,7 @@ public class ApplicationUser : IdentityUser
     public bool IsActive { get; set; } = true;
     public string? RefreshToken { get; set; }
     public DateTime RefreshTokenExpiryTime { get; set; }
+
+    [NotMapped]
+    public List<DomainEvent> DomainEvents { get; } = new();
 }
