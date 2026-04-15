@@ -1,3 +1,4 @@
+using Boilerate.Infrastructure.Auth;
 using Boilerate.Infrastructure.Common;
 using Boilerate.Infrastructure.Persistence;
 using Boilerate.Infrastructure.Persistence.Initialization;
@@ -16,6 +17,7 @@ public static class Startup
     {
         return services
             .AddPersistence()
+            .AddAuth()
             .AddRouting(options => options.LowercaseUrls = true)
             .AddServices();
     }
@@ -27,8 +29,10 @@ public static class Startup
         return builder
             .UseRouting()
             .UseAuthentication()
+            .UseCurrentUser()
             .UseAuthorization();
     }
+
 
     public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder builder)
     {
