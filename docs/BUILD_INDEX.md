@@ -1,4 +1,4 @@
-﻿# {ProjectName} - Hướng dẫn Xây dựng Solution từ đầu
+# {ProjectName} - Hướng dẫn Xây dựng Solution từ đầu
 
 > 📘 **Mục đích:** Tài liệu này hướng dẫn **từng bước chi tiết** để xây dựng một Clean Architecture solution từ đầu.  
 > Mỗi bước giải thích **làm gì**, **tại sao**, **thứ tự thực hiện**, và **code cụ thể**.
@@ -85,7 +85,7 @@ Setup logging, database, và core patterns.
 | 8 | [BUILD_08](BUILD_08_Database_Initialization.md) | Database setup, migrations, seeding | Bước 7 |
 | 9 | [BUILD_09](BUILD_09_Domain_Base_Entities.md) | Base entities, Domain Events | Bước 8 |
 | 10 | [BUILD_10](BUILD_10_Service_Registration.md) | Auto service registration pattern | Bước 9 |
-| 11 | [BUILD_11](BUILD_11_Repository_Pattern.md) | Repository pattern, Specifications | Bước 10 |
+| 11 | [BUILD_11](BUILD_11_Repository_Pattern.md) ✅ | Repository pattern, Specifications | Bước 10 |
 | 11.1 | [BUILD_11_Specification](BUILD_11_Specification.md) | Specification pattern chi tiết | Bước 11 |
 | 11.2 | [BUILD_11_PropertyExpressions](BUILD_11_1_PropertyExpressions.md) | Property expressions helper | Bước 11 |
 

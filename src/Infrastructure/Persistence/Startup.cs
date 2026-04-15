@@ -1,6 +1,9 @@
+using Boilerate.Application.Common.Persistence;
+using Boilerate.Domain.Common.Contracts;
 using Boilerate.Domain.Identity;
 using Boilerate.Infrastructure.Persistence.Context;
 using Boilerate.Infrastructure.Persistence.Initialization;
+using Boilerate.Infrastructure.Persistence.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,8 +43,30 @@ internal static class Startup
             })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders()
-            .Services;
+            .Services
+            .AddRepositories();
     }
+
+    private static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        // Register base repositories
+        services.AddScoped(typeof(IRepository<>), typeof(ApplicationDbRepository<>));
+
+        foreach (var aggregateRootType in
+            typeof(IAggregateRoot).Assembly.GetExportedTypes()
+                .Where(t => typeof(IAggregateRoot).IsAssignableFrom(t) && t.IsClass)
+                .ToList())
+        {
+            // IReadRepository<T> -> alias of IRepository<T>
+            services.AddScoped(
+                typeof(IReadRepository<>).MakeGenericType(aggregateRootType),
+                sp => sp.GetRequiredService(typeof(IRepository<>).MakeGenericType(aggregateRootType)));
+        }
+
+        return services;
+    }
+
+
 
     internal static DbContextOptionsBuilder UseDatabase(
         this DbContextOptionsBuilder builder,
