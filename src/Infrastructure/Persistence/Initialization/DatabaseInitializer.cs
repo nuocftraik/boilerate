@@ -1,9 +1,10 @@
+using Boilerate.Application.Common.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Boilerate.Infrastructure.Persistence.Initialization;
 
-internal class DatabaseInitializer : IDatabaseInitializer
+internal class DatabaseInitializer : IDatabaseInitializer, ITransientService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<DatabaseInitializer> _logger;

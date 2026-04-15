@@ -1,10 +1,11 @@
+using Boilerate.Application.Common.Interfaces;
 using Boilerate.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Boilerate.Infrastructure.Persistence.Initialization;
 
-internal class ApplicationDbInitializer
+internal class ApplicationDbInitializer : ITransientService
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly ILogger<ApplicationDbInitializer> _logger;

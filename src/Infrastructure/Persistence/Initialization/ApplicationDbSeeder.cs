@@ -1,4 +1,5 @@
 using System.Reflection;
+using Boilerate.Application.Common.Interfaces;
 using Boilerate.Domain.Identity;
 using Boilerate.Infrastructure.Persistence.Context;
 using Boilerate.Shared.Authorization;
@@ -8,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Boilerate.Infrastructure.Persistence.Initialization;
 
-internal class ApplicationDbSeeder
+internal class ApplicationDbSeeder : ITransientService
 {
     private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly UserManager<ApplicationUser> _userManager;

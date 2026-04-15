@@ -40,13 +40,7 @@ internal static class Startup
             })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders()
-            .Services
-
-            // Database initialization pipeline
-            .AddTransient<IDatabaseInitializer, DatabaseInitializer>()
-            .AddTransient<ApplicationDbInitializer>()
-            .AddTransient<ApplicationDbSeeder>()
-            .AddTransient<CustomSeederRunner>();
+            .Services;
     }
 
     internal static DbContextOptionsBuilder UseDatabase(

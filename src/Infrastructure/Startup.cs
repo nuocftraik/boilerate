@@ -1,3 +1,4 @@
+using Boilerate.Infrastructure.Common;
 using Boilerate.Infrastructure.Persistence;
 using Boilerate.Infrastructure.Persistence.Initialization;
 using Microsoft.AspNetCore.Builder;
@@ -15,7 +16,8 @@ public static class Startup
     {
         return services
             .AddPersistence()
-            .AddRouting(options => options.LowercaseUrls = true);
+            .AddRouting(options => options.LowercaseUrls = true)
+            .AddServices();
     }
 
     public static IApplicationBuilder UseInfrastructure(

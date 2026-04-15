@@ -1,8 +1,9 @@
+using Boilerate.Application.Common.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Boilerate.Infrastructure.Persistence.Initialization;
 
-internal class CustomSeederRunner
+internal class CustomSeederRunner : ITransientService
 {
     private readonly ICustomSeeder[] _seeders;
 
