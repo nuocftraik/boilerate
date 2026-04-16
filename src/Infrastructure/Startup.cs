@@ -31,9 +31,7 @@ public static class Startup
         return builder
             .UseExceptionMiddleware()
             .UseRouting()
-            .UseAuthentication()
-            .UseCurrentUser()
-            .UseAuthorization();
+            .UseAuth();
     }
 
 
