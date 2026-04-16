@@ -1,27 +1,36 @@
 using Boilerate.Application.Identity.Roles;
+using Boilerate.Infrastructure.Auth.Permissions;
+using Boilerate.Shared.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
 namespace Boilerate.Host.Controllers.Identity;
 
 /// <summary>
-/// Role management APIs
+/// Role Controller - Role and Function management APIs
+/// Endpoints: Role CRUD, Permission management, Function CRUD
 /// </summary>
 public class RoleController : BaseApiController
 {
     private readonly IRoleService _roleService;
     private readonly IFunctionService _functionService;
 
-    public RoleController(IRoleService roleService, IFunctionService functionService)
+    public RoleController(
+        IRoleService roleService,
+        IFunctionService functionService)
     {
         _roleService = roleService;
         _functionService = functionService;
     }
 
+    #region Role Management
+
     /// <summary>
-    /// Get list of all roles
+    /// Lấy danh sách tất cả roles
+    /// Requires: Roles.View permission
     /// </summary>
     [HttpGet]
+    [MustHavePermission(AppAction.View, AppFunction.Role)]
     [OpenApiOperation("Get a list of all roles.", "")]
     public Task<List<RoleDto>> GetListAsync(CancellationToken cancellationToken)
     {
@@ -29,9 +38,11 @@ public class RoleController : BaseApiController
     }
 
     /// <summary>
-    /// Get role details by ID
+    /// Lấy chi tiết role theo ID
+    /// Requires: Roles.View permission
     /// </summary>
     [HttpGet("{id}")]
+    [MustHavePermission(AppAction.View, AppFunction.Role)]
     [OpenApiOperation("Get role details.", "")]
     public Task<RoleDto> GetByIdAsync(string id)
     {
@@ -39,10 +50,11 @@ public class RoleController : BaseApiController
     }
 
     /// <summary>
-    /// Get role details với permissions (for permission UI)
-    /// Returns list of Functions with Actions marked as Selected or not
+    /// Lấy role với danh sách permissions
+    /// Requires: Roles.View permission
     /// </summary>
     [HttpGet("{id}/permissions")]
+    [MustHavePermission(AppAction.View, AppFunction.Role)]
     [OpenApiOperation("Get role details with its permissions.", "")]
     public Task<List<FunctionDto>> GetByIdWithPermissionsAsync(
         string id,
@@ -52,18 +64,21 @@ public class RoleController : BaseApiController
     }
 
     /// <summary>
-    /// Update role's permissions (table-based approach)
+    /// Cập nhật permissions cho role
+    /// Requires: Roles.Update permission
     /// </summary>
     [HttpPut("{id}/permissions")]
+    [MustHavePermission(AppAction.Update, AppFunction.Role)]
     [OpenApiOperation("Update a role's permissions.", "")]
     public async Task<ActionResult> UpdatePermissionsAsync(
         string id,
         UpdateRolePermissionsRequest request,
         CancellationToken cancellationToken)
     {
+        // Validate ID match
         if (id != request.RoleId)
         {
-            return BadRequest();
+            return BadRequest("ID mismatch");
         }
 
         var result = await _roleService.UpdatePermissionsAsync(request, cancellationToken);
@@ -71,9 +86,11 @@ public class RoleController : BaseApiController
     }
 
     /// <summary>
-    /// Create hoặc update role
+    /// Tạo hoặc cập nhật role
+    /// Requires: Roles.Create hoặc Roles.Update permission
     /// </summary>
     [HttpPost("create/update")]
+    [MustHavePermission(AppAction.Create, AppFunction.Role)]
     [OpenApiOperation("Create or update a role.", "")]
     public async Task<ActionResult> RegisterRoleAsync(CreateOrUpdateRoleRequest request)
     {
@@ -82,9 +99,11 @@ public class RoleController : BaseApiController
     }
 
     /// <summary>
-    /// Delete role
+    /// Xóa role
+    /// Requires: Roles.Delete permission
     /// </summary>
     [HttpDelete("{id}")]
+    [MustHavePermission(AppAction.Delete, AppFunction.Role)]
     [OpenApiOperation("Delete a role.", "")]
     public async Task<ActionResult> DeleteAsync(string id)
     {
@@ -92,20 +111,29 @@ public class RoleController : BaseApiController
         return Ok(new { message = result });
     }
 
+    #endregion
+
+    #region Function Management
+
     /// <summary>
-    /// Get list of all functions (for permission UI)
+    /// Lấy danh sách tất cả functions
+    /// Requires: Functions.View permission
     /// </summary>
     [HttpGet("functions")]
+    [MustHavePermission(AppAction.View, AppFunction.Role)]
     [OpenApiOperation("Get a list of all functions.", "")]
-    public Task<List<FunctionDto>> GetFunctionListAsync(CancellationToken cancellationToken)
+    public Task<List<FunctionDto>> GetFunctionListAsync(
+ CancellationToken cancellationToken)
     {
         return _functionService.GetListAsync(cancellationToken);
     }
 
     /// <summary>
-    /// Get function details by ID
+    /// Lấy chi tiết function theo ID
+    /// Requires: Functions.View permission
     /// </summary>
     [HttpGet("function/{id}")]
+    [MustHavePermission(AppAction.View, AppFunction.Role)]
     [OpenApiOperation("Get function details.", "")]
     public Task<FunctionDto> GetFunctionByIdAsync(Guid id)
     {
@@ -113,24 +141,31 @@ public class RoleController : BaseApiController
     }
 
     /// <summary>
-    /// Create hoặc update function
+    /// Tạo hoặc cập nhật function
+    /// Requires: Functions.Create permission
     /// </summary>
     [HttpPost("function/create/update")]
+    [MustHavePermission(AppAction.Create, AppFunction.Role)]
     [OpenApiOperation("Create or update a function.", "")]
-    public async Task<ActionResult> CreateUpdateFunctionAsync(CreateOrUpdateFunctionRequest request)
+    public async Task<ActionResult> CreateUpdateFunctionAsync(
+        CreateOrUpdateFunctionRequest request)
     {
         var result = await _functionService.CreateOrUpdateAsync(request);
         return Ok(new { message = result });
     }
 
     /// <summary>
-    /// Delete function
+    /// Xóa function
+    /// Requires: Functions.Delete permission
     /// </summary>
     [HttpDelete("function/{id}")]
+    [MustHavePermission(AppAction.Delete, AppFunction.Role)]
     [OpenApiOperation("Delete a function.", "")]
     public async Task<ActionResult> DeleteFunctionAsync(Guid id)
     {
         var result = await _functionService.DeleteAsync(id);
         return Ok(new { message = result });
     }
+
+    #endregion
 }

@@ -1,5 +1,6 @@
 using Boilerate.Application.Common.Exceptions;
 using Boilerate.Application.Identity.Tokens;
+using Boilerate.Application.Identity.Users;
 using Boilerate.Domain.Identity;
 using Boilerate.Infrastructure.Auth;
 using Boilerate.Infrastructure.Auth.Jwt;
@@ -22,15 +23,18 @@ internal class TokenService : ITokenService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SecuritySettings _securitySettings;
     private readonly JwtSettings _jwtSettings;
+    private readonly IUserService _userService;
 
     public TokenService(
         UserManager<ApplicationUser> userManager,
         IOptions<JwtSettings> jwtSettings,
-        IOptions<SecuritySettings> securitySettings)
+        IOptions<SecuritySettings> securitySettings,
+        IUserService userService)
     {
         _userManager = userManager;
         _jwtSettings = jwtSettings.Value;
         _securitySettings = securitySettings.Value;
+        _userService = userService;
     }
 
     /// <summary>
@@ -100,7 +104,7 @@ internal class TokenService : ITokenService
         string ipAddress)
     {
         // Generate JWT access token
-        string token = GenerateJwt(user, ipAddress);
+        string token = await GenerateJwtAsync(user, ipAddress);
 
         // Generate refresh token (cryptographically random)
         user.RefreshToken = GenerateRefreshToken();
@@ -118,14 +122,18 @@ internal class TokenService : ITokenService
     /// <summary>
     /// Generate JWT access token
     /// </summary>
-    private string GenerateJwt(ApplicationUser user, string ipAddress) =>
-        GenerateEncryptedToken(GetSigningCredentials(), GetClaims(user, ipAddress));
+    private async Task<string> GenerateJwtAsync(ApplicationUser user, string ipAddress)
+    {
+        var claims = await GetClaimsAsync(user, ipAddress);
+        return GenerateEncryptedToken(GetSigningCredentials(), claims);
+    }
 
     /// <summary>
-    /// Build user claims cho JWT
+    /// Build user claims cho JWT bao gồm permissions
     /// </summary>
-    private IEnumerable<Claim> GetClaims(ApplicationUser user, string ipAddress) =>
-        new List<Claim>
+    private async Task<IEnumerable<Claim>> GetClaimsAsync(ApplicationUser user, string ipAddress)
+    {
+        var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id),
             new(ClaimTypes.Email, user.Email!),
@@ -136,6 +144,23 @@ internal class TokenService : ITokenService
             new(AppClaims.ImageUrl, user.ImageUrl ?? string.Empty),
             new(ClaimTypes.MobilePhone, user.PhoneNumber ?? string.Empty)
         };
+
+        // Add Roles vào claims
+        var roles = await _userManager.GetRolesAsync(user);
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
+        // Add Permissions vào claims (Step 21 core requirement)
+        var permissions = await _userService.GetPermissionsAsync(user.Id, default);
+        foreach (var permission in permissions)
+        {
+            claims.Add(new Claim(AppClaims.Permission, permission));
+        }
+
+        return claims;
+    }
 
     /// <summary>
     /// Generate cryptographically secure refresh token

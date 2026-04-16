@@ -6,48 +6,63 @@ using NSwag.Annotations;
 namespace Boilerate.Host.Controllers.Identity;
 
 /// <summary>
-/// Token management APIs
+/// Tokens Controller - Authentication endpoints
+/// Endpoints: Login, Refresh token
 /// </summary>
 public sealed class TokensController : BaseApiController
 {
     private readonly ITokenService _tokenService;
 
-    public TokensController(ITokenService tokenService) => _tokenService = tokenService;
-
-    /// <summary>
-    /// Login và lấy access token
-    /// </summary>
-    /// <param name="request">Email và Password</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>TokenResponse chứa access token và refresh token</returns>
-    [HttpPost("get")]
-    [AllowAnonymous]
-    [OpenApiOperation("Request an access token using credentials.", "")]
-    public Task<TokenResponse> GetTokenAsync(
-        TokenRequest request,
-        CancellationToken cancellationToken)
+    public TokensController(ITokenService tokenService)
     {
-        return _tokenService.GetTokenAsync(request, GetIpAddress()!, cancellationToken);
+        _tokenService = tokenService;
     }
 
     /// <summary>
-    /// Refresh access token bằng refresh token
+    /// Login endpoint - Đăng nhập bằng email và password
     /// </summary>
-    /// <param name="request">Expired access token và refresh token</param>
-    /// <returns>TokenResponse chứa tokens mới</returns>
+    /// <param name="request">Token request với email và password</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>JWT token và refresh token</returns>
+    [HttpPost("get")]
+    [AllowAnonymous] // Không cần authentication để login
+    [OpenApiOperation("Request an access token using credentials.", "")]
+    public Task<TokenResponse> GetTokenAsync(
+    TokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        // Get client IP address
+        var ipAddress = GetIpAddress();
+
+        // Validate credentials và generate JWT token
+        return _tokenService.GetTokenAsync(request, ipAddress!, cancellationToken);
+    }
+
+    /// <summary>
+    /// Refresh token endpoint - Làm mới access token bằng refresh token
+    /// </summary>
+    /// <param name="request">Refresh token request</param>
+    /// <returns>New JWT token và refresh token</returns>
     [HttpPost("refresh")]
-    [AllowAnonymous]
+    [AllowAnonymous] // Không cần authentication để refresh
     [OpenApiOperation("Request an access token using a refresh token.", "")]
     public Task<TokenResponse> RefreshAsync(RefreshTokenRequest request)
     {
-        return _tokenService.RefreshTokenAsync(request, GetIpAddress()!);
+        // Get client IP address
+        var ipAddress = GetIpAddress();
+
+        // Validate refresh token và generate new JWT token
+        return _tokenService.RefreshTokenAsync(request, ipAddress!);
     }
 
     /// <summary>
-    /// Get client IP address (support proxy)
+    /// Helper method để lấy IP address của client
     /// </summary>
+    /// <returns>Client IP address</returns>
     private string? GetIpAddress() =>
+        // Check X-Forwarded-For header (nếu đằng sau proxy/load balancer)
         Request.Headers.ContainsKey("X-Forwarded-For")
-            ? Request.Headers["X-Forwarded-For"]
-            : HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "N/A";
+      ? Request.Headers["X-Forwarded-For"]
+      // Fallback sang RemoteIpAddress
+       : HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "N/A";
 }

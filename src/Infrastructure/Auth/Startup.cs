@@ -26,8 +26,18 @@ internal static class Startup
         services.AddScoped<ICurrentUserInitializer, CurrentUser>();
 
         return services
+            .AddPermissions()
             .AddJwtAuth();
     }
+
+    /// <summary>
+    /// Register dynamic permission-based authorization.
+    /// </summary>
+    private static IServiceCollection AddPermissions(this IServiceCollection services) =>
+        services
+            .AddSingleton<Microsoft.AspNetCore.Authorization.IAuthorizationPolicyProvider, Permissions.PermissionPolicyProvider>()
+            .AddScoped<Microsoft.AspNetCore.Authorization.IAuthorizationHandler, Permissions.PermissionAuthorizationHandler>();
+
 
     internal static IApplicationBuilder UseCurrentUser(this IApplicationBuilder app) =>
         app.UseMiddleware<CurrentUserMiddleware>();
