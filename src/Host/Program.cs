@@ -27,7 +27,42 @@ try
             Title = "Boilerate API",
             Version = "v1"
         });
+
+        // Add JWT Bearer Security Definition
+        options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+            Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\""
+        });
+
+        options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+        {
+            {
+                new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                    {
+                        Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] {}
+            }
+        });
+
+        // Load XML Comments for Descriptions
+        var xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, "*.xml");
+        foreach (var xmlFile in xmlFiles)
+        {
+            options.IncludeXmlComments(xmlFile);
+        }
     });
+
+
 
     var app = builder.Build();
 

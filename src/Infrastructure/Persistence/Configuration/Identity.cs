@@ -94,14 +94,15 @@ public class ActionInFunctionConfig : IEntityTypeConfiguration<ActionInFunction>
         builder.HasKey(aif => new { aif.ActionId, aif.FunctionId });
 
         builder.HasOne(aif => aif.Action)
-            .WithMany()
+            .WithMany(a => a.ActionInFunctions)
             .HasForeignKey(aif => aif.ActionId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(aif => aif.Function)
-            .WithMany()
+            .WithMany(f => f.ActionInFunctions)
             .HasForeignKey(aif => aif.FunctionId)
             .OnDelete(DeleteBehavior.Restrict);
+
     }
 }
 
