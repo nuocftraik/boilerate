@@ -3,6 +3,7 @@ using Boilerate.Infrastructure.BackgroundJobs;
 using Boilerate.Infrastructure.Caching;
 using Boilerate.Infrastructure.Common;
 using Boilerate.Infrastructure.FileStorage;
+using Boilerate.Infrastructure.Identity;
 using Boilerate.Infrastructure.Mailing;
 using Boilerate.Infrastructure.Middleware;
 using Boilerate.Infrastructure.Persistence;
@@ -22,6 +23,7 @@ public static class Startup
     {
         return services
             .AddPersistence()
+            .AddIdentity()
             .AddAuth()
             .AddCaching(config)
             .AddMailing(config)

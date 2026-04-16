@@ -1,4 +1,4 @@
-namespace Boilerate.Application.Common.Mailing;
+namespace Boilerate.Application.Identity.Users;
 
 public class RegisterUserEmailModel
 {

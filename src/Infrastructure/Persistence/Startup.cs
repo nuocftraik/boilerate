@@ -30,20 +30,6 @@ internal static class Startup
                 _logger.Information("DB Provider: {provider}", dbSettings.DBProvider);
                 options.UseDatabase(dbSettings.DBProvider, dbSettings.ConnectionString);
             })
-
-            // Identity setup
-            .AddIdentity<ApplicationUser, ApplicationRole>(options =>
-            {
-                options.Password.RequiredLength = 6;
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.User.RequireUniqueEmail = true;
-            })
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders()
-            .Services
             .AddRepositories();
     }
 
