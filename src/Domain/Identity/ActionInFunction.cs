@@ -1,5 +1,4 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using Boilerate.Domain.Common.Contracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace Boilerate.Domain.Identity;
 
@@ -8,18 +7,32 @@ namespace Boilerate.Domain.Identity;
 /// Mỗi Function có thể chứa nhiều Actions (VD: Users module có View, Create, Update, Delete).
 /// Sử dụng composite key (ActionId, FunctionId).
 /// </summary>
-public class ActionInFunction : IEntity
+[PrimaryKey(nameof(ActionId), nameof(FunctionId))]
+public class ActionInFunction
 {
+    /// <summary>
+    /// Action ID (foreign key)
+    /// </summary>
     public Guid ActionId { get; set; }
+
+    /// <summary>
+    /// Function ID (foreign key)
+    /// </summary>
     public Guid FunctionId { get; set; }
 
+    /// <summary>
+    /// Navigation property to Action
+    /// </summary>
     public virtual Action Action { get; set; } = default!;
+
+    /// <summary>
+    /// Navigation property to Function
+    /// </summary>
     public virtual Function Function { get; set; } = default!;
 
-    [NotMapped]
-    public List<DomainEvent> DomainEvents { get; } = new();
-
-    public ActionInFunction() { }
+    public ActionInFunction()
+    {
+    }
 
     public ActionInFunction(Guid actionId, Guid functionId)
     {
