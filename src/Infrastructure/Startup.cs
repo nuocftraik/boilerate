@@ -1,4 +1,5 @@
 using Boilerate.Infrastructure.Auth;
+using Boilerate.Infrastructure.BackgroundJobs;
 using Boilerate.Infrastructure.Caching;
 using Boilerate.Infrastructure.Common;
 using Boilerate.Infrastructure.FileStorage;
@@ -24,6 +25,7 @@ public static class Startup
             .AddAuth()
             .AddCaching(config)
             .AddMailing(config)
+            .AddBackgroundJobs(config)
             .AddExceptionMiddleware()
             .AddRouting(options => options.LowercaseUrls = true)
             .AddServices();
@@ -37,7 +39,8 @@ public static class Startup
             .UseExceptionMiddleware()
             .UseRouting()
             .UseFileStorage()
-            .UseAuth();
+            .UseAuth()
+            .UseHangfireDashboard(config);
     }
 
 

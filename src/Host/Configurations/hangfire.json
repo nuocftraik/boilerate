@@ -1,0 +1,13 @@
+{
+  "HangfireStorageSettings": {
+    "StorageProvider": "Memory",
+    "ConnectionString": "",
+    "EnableDashboard": true,
+    "DashboardPath": "/hangfire",
+    "DashboardTitle": "Boilerate Background Jobs",
+    "WorkerCount": 10,
+    "JobRetentionDays": 7,
+    "EnableAutomaticRetry": true,
+    "MaxRetryAttempts": 3
+  }
+}
