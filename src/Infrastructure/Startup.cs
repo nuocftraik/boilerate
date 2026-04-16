@@ -1,5 +1,6 @@
 using Boilerate.Infrastructure.Auth;
 using Boilerate.Infrastructure.Common;
+using Boilerate.Infrastructure.Middleware;
 using Boilerate.Infrastructure.Persistence;
 using Boilerate.Infrastructure.Persistence.Initialization;
 using Microsoft.AspNetCore.Builder;
@@ -18,6 +19,7 @@ public static class Startup
         return services
             .AddPersistence()
             .AddAuth()
+            .AddExceptionMiddleware()
             .AddRouting(options => options.LowercaseUrls = true)
             .AddServices();
     }
@@ -27,6 +29,7 @@ public static class Startup
         IConfiguration config)
     {
         return builder
+            .UseExceptionMiddleware()
             .UseRouting()
             .UseAuthentication()
             .UseCurrentUser()
