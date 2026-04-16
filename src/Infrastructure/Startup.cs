@@ -2,6 +2,7 @@ using Boilerate.Infrastructure.Auth;
 using Boilerate.Infrastructure.Caching;
 using Boilerate.Infrastructure.Common;
 using Boilerate.Infrastructure.FileStorage;
+using Boilerate.Infrastructure.Mailing;
 using Boilerate.Infrastructure.Middleware;
 using Boilerate.Infrastructure.Persistence;
 using Boilerate.Infrastructure.Persistence.Initialization;
@@ -22,6 +23,7 @@ public static class Startup
             .AddPersistence()
             .AddAuth()
             .AddCaching(config)
+            .AddMailing(config)
             .AddExceptionMiddleware()
             .AddRouting(options => options.LowercaseUrls = true)
             .AddServices();

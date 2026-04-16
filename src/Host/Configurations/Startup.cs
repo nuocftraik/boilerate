@@ -19,6 +19,8 @@ internal static class Startup
             .AddJsonFile($"{configurationsDirectory}/security.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
             .AddJsonFile($"{configurationsDirectory}/cache.json", optional: false, reloadOnChange: true)
             .AddJsonFile($"{configurationsDirectory}/cache.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+            .AddJsonFile($"{configurationsDirectory}/mail.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"{configurationsDirectory}/mail.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
             .AddEnvironmentVariables();
      
         return builder;
