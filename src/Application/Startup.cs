@@ -1,5 +1,7 @@
 using System.Reflection;
+using Boilerate.Application.Common.Behaviors;
 using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Boilerate.Application;
@@ -12,6 +14,10 @@ public static class Startup
         
         return services
             .AddValidatorsFromAssembly(assembly)
-            .AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
+            .AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(assembly);
+                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            });
     }
 }
