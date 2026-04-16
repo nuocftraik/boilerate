@@ -1,14 +1,27 @@
 namespace Boilerate.Application.Identity.Users;
 
+/// <summary>
+/// User role DTO (for assign roles UI)
+/// </summary>
 public class UserRoleDto
 {
-    public string? RoleId { get; set; }
-    public string? RoleName { get; set; }
-    public string? Description { get; set; }
-    public bool Enabled { get; set; }
-}
+    /// <summary>
+    /// Role ID
+    /// </summary>
+    public string RoleId { get; set; } = default!;
 
-public class UserRolesRequest
-{
-    public List<UserRoleDto> UserRoles { get; set; } = new();
+    /// <summary>
+    /// Role name
+    /// </summary>
+    public string RoleName { get; set; } = default!;
+
+    /// <summary>
+    /// Role description
+    /// </summary>
+    public string? Description { get; set; }
+
+    /// <summary>
+    /// Is this role assigned to user (checkbox state)
+    /// </summary>
+    public bool Enabled { get; set; }
 }

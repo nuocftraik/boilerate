@@ -1,15 +1,29 @@
-using System.ComponentModel.DataAnnotations;
 using Boilerate.Domain.Common.Contracts;
 
 namespace Boilerate.Domain.Identity;
 
 /// <summary>
-/// Đại diện một hành động trong hệ thống phân quyền (View, Create, Update, Delete...).
-/// Dữ liệu được seed tự động từ Shared/Authorization/AppAction constants.
+/// Action entity (represents an operation)
+/// Examples: View, Create, Update, Delete, Export, Import
 /// </summary>
 public class Action : BaseEntity
 {
-    [Required]
-    [MaxLength(100)]
+    /// <summary>
+    /// Action name (e.g., "View", "Create", "Update", "Delete")
+    /// </summary>
     public string Name { get; set; } = default!;
+
+    /// <summary>
+    /// Functions that have this action (many-to-many relationship)
+    /// </summary>
+    public virtual ICollection<ActionInFunction> ActionInFunctions { get; set; } = default!;
+
+    public Action()
+    {
+    }
+
+    public Action(string name)
+    {
+        Name = name;
+    }
 }

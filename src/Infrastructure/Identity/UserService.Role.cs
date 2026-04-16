@@ -7,7 +7,12 @@ namespace Boilerate.Infrastructure.Identity;
 
 internal partial class UserService
 {
-    public async Task<List<UserRoleDto>> GetRolesAsync(string userId, CancellationToken cancellationToken)
+    /// <summary>
+    /// Get user's assigned roles
+    /// </summary>
+    public async Task<List<UserRoleDto>> GetRolesAsync(
+        string userId,
+        CancellationToken cancellationToken)
     {
         var user = await _userManager.Users
             .AsNoTracking()
@@ -15,8 +20,10 @@ internal partial class UserService
 
         _ = user ?? throw new NotFoundException("User Not Found.");
 
+        // Get user's roles
         var userRoles = await _userManager.GetRolesAsync(user);
 
+        // Get all available roles
         var allRoles = await _roleManager.Roles.ToListAsync(cancellationToken);
 
         var roleDtos = allRoles.Select(role => new UserRoleDto
@@ -24,43 +31,54 @@ internal partial class UserService
             RoleId = role.Id,
             RoleName = role.Name!,
             Description = role.Description,
-            Enabled = userRoles.Contains(role.Name!)
+            Enabled = userRoles.Contains(role.Name!) // Check if user has this role
         }).ToList();
 
         return roleDtos;
     }
 
-    public async Task<string> AssignRolesAsync(string userId, UserRolesRequest request, CancellationToken cancellationToken)
+    /// <summary>
+    /// Assign roles to user
+    /// Replaces all current roles with new ones
+    /// </summary>
+    public async Task<string> AssignRolesAsync(
+        string userId,
+        UserRolesRequest request,
+        CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByIdAsync(userId);
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
+
+        var user = await _userManager.Users
+            .Where(u => u.Id == userId)
+            .FirstOrDefaultAsync(cancellationToken);
+
         _ = user ?? throw new NotFoundException("User Not Found.");
 
-        // Check if we are trying to remove Admin role from the last admin
-        if (await _userManager.IsInRoleAsync(user, AppRoles.Admin) 
-            && request.UserRoles.Any(a => a.RoleName == AppRoles.Admin && !a.Enabled))
+        // Check if Admin role is being assigned/removed for current user
+        if (await _userManager.IsInRoleAsync(user, AppRoles.Admin)
+            && (request.UserRoles.FirstOrDefault(r => r.RoleName == AppRoles.Admin) is not { Enabled: true }))
         {
-            // Count admins
-            int adminCount = (await _userManager.GetUsersInRoleAsync(AppRoles.Admin)).Count;
-            if (adminCount <= 1)
-            {
-                throw new ConflictException("Cannot remove Admin role from the last administrator account.");
-            }
+            throw new ConflictException("Admin users cannot remove their own Admin role.");
         }
 
+        // Remove all current roles
         var currentRoles = await _userManager.GetRolesAsync(user);
-        var result = await _userManager.RemoveFromRolesAsync(user, currentRoles);
-        if (!result.Succeeded)
+        foreach (var role in currentRoles)
         {
-            throw new InternalServerException("Update roles failed", result.GetErrors());
+            await _userManager.RemoveFromRoleAsync(user, role);
         }
 
-        var rolesToAdd = request.UserRoles.Where(x => x.Enabled).Select(x => x.RoleName!).ToList();
-        result = await _userManager.AddToRolesAsync(user, rolesToAdd);
-        if (!result.Succeeded)
+        // Add new roles từ request (where Enabled = true)
+        foreach (var roleRequest in request.UserRoles.Where(r => r.Enabled))
         {
-            throw new InternalServerException("Update roles failed", result.GetErrors());
+            var role = await _roleManager.FindByNameAsync(roleRequest.RoleName);
+            if (role != null)
+            {
+                await _userManager.AddToRoleAsync(user, role.Name!);
+            }
         }
 
         return "User Roles Updated Successfully.";
     }
 }
+

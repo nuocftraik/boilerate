@@ -21,7 +21,7 @@ internal static class Startup
             .ValidateOnStart(); // Validate khi app start (fail fast)
 
         // Register ConfigureJwtBearerOptions
-        services.AddScoped<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
+        services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
 
         // Add JWT Bearer authentication
         return services
