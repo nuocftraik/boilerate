@@ -1,4 +1,5 @@
 using Boilerate.Infrastructure.Auth;
+using Boilerate.Infrastructure.Caching;
 using Boilerate.Infrastructure.Common;
 using Boilerate.Infrastructure.Middleware;
 using Boilerate.Infrastructure.Persistence;
@@ -19,6 +20,7 @@ public static class Startup
         return services
             .AddPersistence()
             .AddAuth()
+            .AddCaching(config)
             .AddExceptionMiddleware()
             .AddRouting(options => options.LowercaseUrls = true)
             .AddServices();
