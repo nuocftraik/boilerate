@@ -1,6 +1,8 @@
 using Boilerate.Application.Common.Interfaces;
 using Boilerate.Infrastructure.Auth.Jwt;
+using Boilerate.Infrastructure.Auth.OAuth2;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Boilerate.Infrastructure.Auth;
@@ -10,7 +12,7 @@ internal static class Startup
     /// <summary>
     /// Register CurrentUser services.
     /// </summary>
-    internal static IServiceCollection AddAuth(this IServiceCollection services)
+    internal static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration config)
     {
         services.AddOptions<SecuritySettings>()
             .BindConfiguration(nameof(SecuritySettings))
@@ -27,7 +29,8 @@ internal static class Startup
 
         return services
             .AddPermissions()
-            .AddJwtAuth();
+            .AddJwtAuth()
+            .AddO2Authentication(config);
     }
 
     /// <summary>

@@ -23,6 +23,8 @@ internal static class Startup
             .AddJsonFile($"{configurationsDirectory}/mail.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
             .AddJsonFile($"{configurationsDirectory}/hangfire.json", optional: false, reloadOnChange: true)
             .AddJsonFile($"{configurationsDirectory}/hangfire.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+            .AddJsonFile($"{configurationsDirectory}/auth.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"{configurationsDirectory}/auth.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
             .AddEnvironmentVariables();
      
         return builder;

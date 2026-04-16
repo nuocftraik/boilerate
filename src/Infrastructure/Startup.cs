@@ -24,7 +24,7 @@ public static class Startup
         return services
             .AddPersistence()
             .AddIdentity()
-            .AddAuth()
+            .AddAuth(config)
             .AddCaching(config)
             .AddMailing(config)
             .AddBackgroundJobs(config)
