@@ -1,3 +1,5 @@
+using Boilerate.Application.Common.Events;
+using Boilerate.Application.Common.Interfaces;
 using Boilerate.Domain.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -5,8 +7,11 @@ namespace Boilerate.Infrastructure.Persistence.Context;
 
 public class ApplicationDbContext : BaseDbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
+    public ApplicationDbContext(
+        DbContextOptions<ApplicationDbContext> options,
+        ICurrentUser currentUser,
+        IEventPublisher events)
+        : base(options, currentUser, events)
     {
     }
 
