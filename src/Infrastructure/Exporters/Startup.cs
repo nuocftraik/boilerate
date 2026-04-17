@@ -9,6 +9,7 @@ internal static class Startup
     {
         // Register Excel writer
         services.AddTransient<IExcelWriter, ClosedXMLWriter>();
+        services.AddTransient<IPdfService, QuestPdfService>();
 
         return services;
     }
