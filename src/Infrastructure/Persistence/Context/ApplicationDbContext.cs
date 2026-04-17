@@ -1,5 +1,6 @@
 using Boilerate.Application.Common.Events;
 using Boilerate.Application.Common.Interfaces;
+using Boilerate.Domain.Auditing;
 using Boilerate.Domain.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,10 +11,14 @@ public class ApplicationDbContext : BaseDbContext
     public ApplicationDbContext(
         DbContextOptions<ApplicationDbContext> options,
         ICurrentUser currentUser,
+        ISerializerService serializer,
         IEventPublisher events)
-        : base(options, currentUser, events)
+        : base(options, currentUser, serializer, events)
     {
     }
+
+    // Auditing
+    public DbSet<Trail> Trails => Set<Trail>();
 
     // Permission system DbSets
     public DbSet<Domain.Identity.Action> Actions => Set<Domain.Identity.Action>();

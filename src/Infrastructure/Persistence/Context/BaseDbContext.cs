@@ -1,7 +1,9 @@
 using Boilerate.Application.Common.Events;
 using Boilerate.Application.Common.Interfaces;
+using Boilerate.Domain.Auditing;
 using Boilerate.Domain.Common.Contracts;
 using Boilerate.Domain.Identity;
+using Boilerate.Infrastructure.Auditing;
 using Boilerate.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -23,15 +25,18 @@ public abstract class BaseDbContext : IdentityDbContext<
     IdentityUserToken<string>>
 {
     private readonly ICurrentUser _currentUser;
+    private readonly ISerializerService _serializer;
     private readonly IEventPublisher _events;
 
     protected BaseDbContext(
         DbContextOptions options,
         ICurrentUser currentUser,
+        ISerializerService serializer,
         IEventPublisher events)
         : base(options)
     {
         _currentUser = currentUser;
+        _serializer = serializer;
         _events = events;
     }
 
@@ -53,19 +58,59 @@ public abstract class BaseDbContext : IdentityDbContext<
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        // Handle auditing (Created/Modified/Deleted tracking) và soft delete
-        HandleAuditingBeforeSaveChanges();
+        // 1. Handle soft delete and auditing metadata (CreatedOn, DeletedOn, etc.)
+        HandleAuditingMetadataBeforeSaveChanges();
 
-        // Publish domain events
+        // Ensure EF Core captures all changes before we analyze them for Audit Trail
+        ChangeTracker.DetectChanges();
+
+        // 2. Gather audit entries (Giai đoạn chuẩn bị)
+        var auditEntries = AuditTrailHelper.GatherAuditEntries(ChangeTracker, _currentUser.GetUserId(), _serializer);
+
+        // 3. Publish domain events
         await PublishDomainEventsAsync(cancellationToken);
 
-        return await base.SaveChangesAsync(cancellationToken);
+        // 4. Save audit entries that don't depend on DB-generated values
+        foreach (var entry in auditEntries.Where(e => !e.HasTemporaryProperties))
+        {
+            Set<Trail>().Add(entry.ToAuditTrail());
+        }
+
+        // 5. First Save: Lưu dữ liệu chính và các Audit Logs không phụ thuộc ID DB
+        int result = await base.SaveChangesAsync(cancellationToken);
+
+        // 6. Handle Audit entries with temporary properties (Giai đoạn hoàn tất)
+        // Những record mới thêm có ID do DB sinh ra sẽ được xử lý ở đây
+        if (auditEntries.Any(e => e.HasTemporaryProperties))
+        {
+            foreach (var entry in auditEntries.Where(e => e.HasTemporaryProperties))
+            {
+                foreach (var prop in entry.TemporaryProperties)
+                {
+                    if (prop.Metadata.IsPrimaryKey())
+                    {
+                        entry.KeyValues[prop.Metadata.Name] = prop.CurrentValue;
+                    }
+                    else
+                    {
+                        entry.NewValues[prop.Metadata.Name] = prop.CurrentValue;
+                    }
+                }
+
+                Set<Trail>().Add(entry.ToAuditTrail());
+            }
+
+            // Lưu nốt phần Audit Logs còn lại
+            await base.SaveChangesAsync(cancellationToken);
+        }
+
+        return result;
     }
 
     /// <summary>
-    /// Handle auditing (Created/Modified/Deleted tracking) và soft delete.
+    /// Handle soft delete logic và cập nhật audit metadata (CreatedOn, LastModifiedOn, etc.).
     /// </summary>
-    private void HandleAuditingBeforeSaveChanges()
+    private void HandleAuditingMetadataBeforeSaveChanges()
     {
         var userId = _currentUser.GetUserId();
 
@@ -85,7 +130,6 @@ public abstract class BaseDbContext : IdentityDbContext<
 
                 case EntityState.Deleted:
                     // ⭐ SOFT DELETE LOGIC ⭐
-                    // Thay vì xóa vật lý, chuyển sang Modified và set DeletedOn/DeletedBy
                     if (entry.Entity is ISoftDelete softDelete)
                     {
                         softDelete.DeletedOn = DateTime.UtcNow;

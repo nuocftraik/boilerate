@@ -1,5 +1,8 @@
+using Boilerate.Application.Auditing;
+using Boilerate.Application.Common.Models;
 using Boilerate.Application.Identity.Users;
 using Boilerate.Application.Identity.Users.Password;
+using Boilerate.Infrastructure.Auth.Permissions;
 using Boilerate.Shared.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,18 +11,19 @@ using NSwag.Annotations;
 namespace Boilerate.Host.Controllers.Personal;
 
 /// <summary>
-/// Personal Controller - Current user profile management
-/// Endpoints: Profile, Change password, Get permissions
+/// Personal Controller - Current user profile management.
+/// Endpoints: Profile, Change password, Get permissions, Audit logs.
 /// </summary>
 [Authorize]
 public class PersonalController : BaseApiController
 {
-
     private readonly IUserService _userService;
+    private readonly IAuditService _auditService;
 
-    public PersonalController(IUserService userService)
+    public PersonalController(IUserService userService, IAuditService auditService)
     {
         _userService = userService;
+        _auditService = auditService;
     }
 
     /// <summary>
@@ -98,5 +102,22 @@ public class PersonalController : BaseApiController
 
         var permissions = await _userService.GetPermissionsAsync(userId, cancellationToken);
         return Ok(permissions);
+    }
+
+    /// <summary>
+    /// Lấy audit logs của current logged-in user (lịch sử thay đổi)
+    /// </summary>
+    /// <param name="request">Filter và pagination parameters</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Paginated list of audit logs</returns>
+    [HttpPost("audit-logs")]
+    [MustHavePermission(AppAction.View, AppFunction.Users)]
+    [OpenApiOperation("Get audit logs of currently logged in user.", "")]
+    public async Task<ActionResult<PaginationResponse<AuditDto>>> GetMyAuditLogsAsync(
+        [FromBody] GetMyAuditLogsRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _auditService.GetMyAuditLogsAsync(request, cancellationToken);
+        return Ok(result);
     }
 }
