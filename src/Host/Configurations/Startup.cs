@@ -25,6 +25,8 @@ internal static class Startup
             .AddJsonFile($"{configurationsDirectory}/hangfire.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
             .AddJsonFile($"{configurationsDirectory}/auth.json", optional: false, reloadOnChange: true)
             .AddJsonFile($"{configurationsDirectory}/auth.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+            .AddJsonFile($"{configurationsDirectory}/storage.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"{configurationsDirectory}/storage.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
             .AddEnvironmentVariables();
      
         return builder;

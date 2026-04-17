@@ -1,0 +1,7 @@
+{
+  "BlobStorageSettings": {
+    "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=mystorageaccount;AccountKey=mykey;EndpointSuffix=core.windows.net",
+    "DefaultContainer": "boilerate-files",
+    "DefaultPublicAccess": false
+  }
+}
