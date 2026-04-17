@@ -2,14 +2,13 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Boilerate.Application.Common.Interfaces;
 
 namespace Boilerate.Application.Common.BlobStorage;
 
 /// <summary>
 /// Service for blob storage operations
 /// </summary>
-public interface IBlobStorageService : ITransientService
+public interface IBlobStorageService
 {
     /// <summary>
     /// Upload blob to storage

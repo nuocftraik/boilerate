@@ -120,4 +120,21 @@ public class PersonalController : BaseApiController
         var result = await _auditService.GetMyAuditLogsAsync(request, cancellationToken);
         return Ok(result);
     }
+
+    /// <summary>
+    /// Xuất danh sách audit logs ra Excel
+    /// </summary>
+    [HttpPost("audit-logs/export")]
+    [MustHavePermission(AppAction.Export, AppFunction.Users)]
+    [OpenApiOperation("Export audit logs of currently logged in user to Excel.", "ExportMyAuditLogs")]
+    public async Task<FileResult> ExportMyAuditLogsAsync(
+        [FromBody] ExportAuditLogsRequest request,
+        CancellationToken cancellationToken)
+    {
+        // Force filter by current user
+        request.UserId = User.GetUserId();
+        
+        var result = await Mediator.Send(request, cancellationToken);
+        return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "AuditLogs.xlsx");
+    }
 }

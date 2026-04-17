@@ -9,6 +9,7 @@ using Boilerate.Infrastructure.Middleware;
 using Boilerate.Infrastructure.Persistence;
 using Boilerate.Infrastructure.Persistence.Initialization;
 using Boilerate.Infrastructure.BlobStorage;
+using Boilerate.Infrastructure.Exporters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,7 @@ public static class Startup
             .AddMailing(config)
             .AddBackgroundJobs(config)
             .AddBlobStorage(config)
+            .AddExporters()
             .AddExceptionMiddleware()
             .AddRouting(options => options.LowercaseUrls = true)
             .AddServices();

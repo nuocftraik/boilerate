@@ -13,8 +13,6 @@ namespace Boilerate.Host.Controllers.Common;
 /// <summary>
 /// Blob storage testing endpoints (Development only)
 /// </summary>
-[ApiController]
-[Route("api/[controller]")]
 [AllowAnonymous] // For testing only - remove in production
 public class BlobStorageController : BaseApiController
 {
@@ -29,9 +27,10 @@ public class BlobStorageController : BaseApiController
     /// Upload file to blob storage
     /// </summary>
     [HttpPost("upload")]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> Upload(
-        [FromForm] string containerName,
-        [FromForm] IFormFile file,
+        string containerName,
+        IFormFile file,
         CancellationToken cancellationToken = default)
     {
         if (file == null || file.Length == 0)

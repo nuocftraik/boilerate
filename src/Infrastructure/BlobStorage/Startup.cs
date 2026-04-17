@@ -66,16 +66,18 @@ internal static class Startup
             throw new InvalidOperationException("AWS S3 settings are not configured.");
         }
 
-        // Register AWS S3 client
-        services.AddAWSService<IAmazonS3>();
+        // 1. Configure AWS Options
+        var awsOptions = new Amazon.Extensions.NETCore.Setup.AWSOptions
+        {
+            Region = Amazon.RegionEndpoint.GetBySystemName(settings.Aws.Region),
+            Credentials = new Amazon.Runtime.BasicAWSCredentials(settings.Aws.AccessKey, settings.Aws.SecretKey)
+        };
 
-        // Configure AWS options
-        services.AddDefaultAWSOptions(
-            new Amazon.Extensions.NETCore.Setup.AWSOptions
-            {
-                Region = Amazon.RegionEndpoint.GetBySystemName(settings.Aws.Region),
-                Credentials = new Amazon.Runtime.BasicAWSCredentials(settings.Aws.AccessKey, settings.Aws.SecretKey)
-            });
+        // 2. Register Options
+        services.AddDefaultAWSOptions(awsOptions);
+
+        // 3. Register Specific S3 Client with these options
+        services.AddAWSService<IAmazonS3>(awsOptions);
 
         services.AddTransient<IBlobStorageService, AwsS3StorageService>();
     }

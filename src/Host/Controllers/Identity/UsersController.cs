@@ -178,8 +178,22 @@ public class UsersController : BaseApiController
     }
 
     /// <summary>
+    /// Xuất danh sách users ra Excel
+    /// Requires: Users.Export permission
+    /// </summary>
+    [HttpPost("export")]
+    [MustHavePermission(AppAction.Export, AppFunction.User)]
+    [OpenApiOperation("Export users to Excel.", "ExportUsers")]
+    public async Task<FileResult> ExportAsync(
+        [FromBody] ExportUsersRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await Mediator.Send(request, cancellationToken);
+        return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Users.xlsx");
+    }
+
+    /// <summary>
     /// Helper method để lấy origin URL
-    /// Format: https://localhost:7001
     /// </summary>
     private string GetOriginFromRequest() =>
         $"{Request.Scheme}://{Request.Host.Value}{Request.PathBase.Value}";
