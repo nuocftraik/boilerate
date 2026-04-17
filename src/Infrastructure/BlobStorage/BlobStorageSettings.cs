@@ -1,17 +1,20 @@
+using Boilerate.Infrastructure.BlobStorage.Azure;
+using Boilerate.Infrastructure.BlobStorage.Aws;
+
 namespace Boilerate.Infrastructure.BlobStorage;
 
 /// <summary>
-/// Configuration for Azure Blob Storage
+/// Root Configuration for Blob Storage
 /// </summary>
 public class BlobStorageSettings
 {
     /// <summary>
-    /// Azure Blob Storage connection string
+    /// Storage provider: "Azure" or "AWS"
     /// </summary>
-    public string ConnectionString { get; set; } = default!;
+    public string Provider { get; set; } = "Azure";
 
     /// <summary>
-    /// Default container name
+    /// Default container/bucket name
     /// </summary>
     public string DefaultContainer { get; set; } = "default";
 
@@ -19,4 +22,14 @@ public class BlobStorageSettings
     /// Enable public access by default
     /// </summary>
     public bool DefaultPublicAccess { get; set; } = false;
+
+    /// <summary>
+    /// Azure specific settings
+    /// </summary>
+    public AzureStorageSettings? Azure { get; set; }
+
+    /// <summary>
+    /// AWS specific settings
+    /// </summary>
+    public AwsStorageSettings? Aws { get; set; }
 }
