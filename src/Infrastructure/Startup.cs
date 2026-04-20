@@ -10,6 +10,7 @@ using Boilerate.Infrastructure.Persistence;
 using Boilerate.Infrastructure.Persistence.Initialization;
 using Boilerate.Infrastructure.BlobStorage;
 using Boilerate.Infrastructure.Exporters;
+using Boilerate.Infrastructure.Notifications;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +33,7 @@ public static class Startup
             .AddBackgroundJobs(config)
             .AddBlobStorage(config)
             .AddExporters()
+            .AddNotifications(config)
             .AddExceptionMiddleware()
             .AddRouting(options => options.LowercaseUrls = true)
             .AddServices();
@@ -53,6 +55,7 @@ public static class Startup
     public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder builder)
     {
         builder.MapControllers();
+        builder.MapNotifications();
         return builder;
     }
 

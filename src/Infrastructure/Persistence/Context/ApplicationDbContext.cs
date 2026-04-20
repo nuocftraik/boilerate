@@ -2,6 +2,7 @@ using Boilerate.Application.Common.Events;
 using Boilerate.Application.Common.Interfaces;
 using Boilerate.Domain.Auditing;
 using Boilerate.Domain.Identity;
+using Boilerate.Domain.Notifications;
 using Microsoft.EntityFrameworkCore;
 
 namespace Boilerate.Infrastructure.Persistence.Context;
@@ -25,4 +26,5 @@ public class ApplicationDbContext : BaseDbContext
     public DbSet<Function> Functions => Set<Function>();
     public DbSet<ActionInFunction> ActionInFunctions => Set<ActionInFunction>();
     public DbSet<Permission> Permissions => Set<Permission>();
+    public DbSet<Notification> Notifications => Set<Notification>();
 }

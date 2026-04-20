@@ -53,6 +53,12 @@ public class CurrentUser : ICurrentUser, ICurrentUserInitializer
         _user?.Claims;
 
     /// <summary>
+    /// Lấy danh sách các roles.
+    /// </summary>
+    public List<string>? GetRoles() =>
+        _user?.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
+
+    /// <summary>
     /// Set current user từ ClaimsPrincipal.
     /// Chỉ được gọi một lần per request (từ middleware).
     /// </summary>

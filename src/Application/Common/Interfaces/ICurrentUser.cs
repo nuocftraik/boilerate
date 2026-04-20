@@ -36,4 +36,9 @@ public interface ICurrentUser
     /// Lấy tất cả claims của user.
     /// </summary>
     IEnumerable<Claim>? GetUserClaims();
+    
+    /// <summary>
+    /// Lấy danh sách các roles của user.
+    /// </summary>
+    List<string>? GetRoles();
 }
