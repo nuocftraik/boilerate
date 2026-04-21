@@ -4,6 +4,7 @@ using Boilerate.Domain.Identity;
 using Boilerate.Infrastructure.Persistence.Context;
 using Boilerate.Infrastructure.Persistence.Initialization;
 using Boilerate.Infrastructure.Persistence.Repository;
+using Boilerate.Infrastructure.Persistence.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,8 +36,9 @@ internal static class Startup
 
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        // Register base repositories
+        // Register base repositories and related services
         services.AddScoped(typeof(IRepository<>), typeof(ApplicationDbRepository<>));
+        services.AddScoped(typeof(IPermanentDeleteService<>), typeof(PermanentDeleteService<>));
 
         foreach (var aggregateRootType in
             typeof(IAggregateRoot).Assembly.GetExportedTypes()

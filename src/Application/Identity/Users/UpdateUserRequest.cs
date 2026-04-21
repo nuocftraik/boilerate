@@ -1,4 +1,3 @@
-using Boilerate.Application.Common.FileStorage;
 using FluentValidation;
 
 namespace Boilerate.Application.Identity.Users;
@@ -10,7 +9,7 @@ public class UpdateUserRequest
     public string? LastName { get; set; }
     public string? PhoneNumber { get; set; }
     public string? Email { get; set; }
-    public FileUploadRequest? Image { get; set; }
+    public Microsoft.AspNetCore.Http.IFormFile? Image { get; set; }
     public bool DeleteCurrentImage { get; set; } = false;
 }
 

@@ -7,9 +7,14 @@ namespace Boilerate.Application.Common.Specification;
 /// </summary>
 public class EntitiesByPaginationFilterSpec<T> : EntitiesByBaseFilterSpec<T>
 {
-    public EntitiesByPaginationFilterSpec(PaginationFilter filter)
-        : base(filter) =>
-        Query.PaginateBy(filter);
+    public EntitiesByPaginationFilterSpec(PaginationFilter? filter)
+        : base(filter)
+    {
+        if (filter != null)
+        {
+            Query.PaginateBy(filter);
+        }
+    }
 }
 
 /// <summary>
@@ -17,7 +22,12 @@ public class EntitiesByPaginationFilterSpec<T> : EntitiesByBaseFilterSpec<T>
 /// </summary>
 public class EntitiesByPaginationFilterSpec<T, TResult> : EntitiesByBaseFilterSpec<T, TResult>
 {
-    public EntitiesByPaginationFilterSpec(PaginationFilter filter)
-        : base(filter) =>
-        Query.PaginateBy(filter);
+    public EntitiesByPaginationFilterSpec(PaginationFilter? filter)
+        : base(filter)
+    {
+        if (filter != null)
+        {
+            Query.PaginateBy(filter);
+        }
+    }
 }

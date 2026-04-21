@@ -5,6 +5,8 @@ using Boilerate.Domain.Identity;
 using Boilerate.Domain.Notifications;
 using Microsoft.EntityFrameworkCore;
 
+using Boilerate.Domain.Catalog;
+
 namespace Boilerate.Infrastructure.Persistence.Context;
 
 public class ApplicationDbContext : BaseDbContext
@@ -17,6 +19,10 @@ public class ApplicationDbContext : BaseDbContext
         : base(options, currentUser, serializer, events)
     {
     }
+
+    // Catalog
+    public DbSet<Product> Products => Set<Product>();
+    public DbSet<Category> Categories => Set<Category>();
 
     // Auditing
     public DbSet<Trail> Trails => Set<Trail>();

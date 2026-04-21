@@ -13,7 +13,7 @@ public interface IFileStorageService : ITransientService
     /// </summary>
     /// <typeparam name="T">Entity type (dùng để organize folders)</typeparam>
     Task<string> UploadAsync<T>(
-        FileUploadRequest? request,
+        Microsoft.AspNetCore.Http.IFormFile? file,
         FileType supportedFileType,
         CancellationToken cancellationToken = default)
         where T : class;

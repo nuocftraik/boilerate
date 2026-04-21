@@ -9,29 +9,24 @@ namespace Boilerate.Infrastructure.FileStorage;
 public class LocalFileStorageService : IFileStorageService
 {
     public async Task<string> UploadAsync<T>(
-        FileUploadRequest? request,
+        Microsoft.AspNetCore.Http.IFormFile? file,
         FileType supportedFileType,
         CancellationToken cancellationToken = default)
         where T : class
     {
-        if (request == null || request.Data == null)
+        if (file == null || file.Length == 0)
         {
             return string.Empty;
         }
 
-        if (request.Extension is null || !supportedFileType.GetDescriptionList().Contains(request.Extension.ToLower()))
+        string extension = Path.GetExtension(file.FileName);
+
+        if (extension is null || !supportedFileType.GetDescriptionList().Contains(extension.ToLower()))
         {
             throw new InvalidOperationException("File Format Not Supported.");
         }
 
-        if (request.Name is null)
-        {
-            throw new InvalidOperationException("Name is required.");
-        }
-
-        string base64Data = Regex.Match(request.Data, "data:image/(?<type>.+?),(?<data>.+)").Groups["data"].Value;
-
-        var streamData = new MemoryStream(Convert.FromBase64String(base64Data));
+        var streamData = file.OpenReadStream();
 
         if (streamData.Length > 0)
         {
@@ -50,10 +45,10 @@ public class LocalFileStorageService : IFileStorageService
             string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
             Directory.CreateDirectory(pathToSave);
 
-            string fileName = request.Name.Trim('"');
+            string fileName = Path.GetFileNameWithoutExtension(file.FileName).Trim('"');
             fileName = RemoveSpecialCharacters(fileName);
             fileName = fileName.ReplaceWhitespace("-");
-            fileName += request.Extension.Trim();
+            fileName += extension;
 
             string fullPath = Path.Combine(pathToSave, fileName);
             string dbPath = Path.Combine(folderName, fileName);
