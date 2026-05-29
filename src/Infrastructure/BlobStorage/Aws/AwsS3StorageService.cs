@@ -177,14 +177,14 @@ public class AwsS3StorageService : IBlobStorageService
                     {
                         Name = name,
                         ContainerName = containerName,
-                        Size = obj.Size,
-                        LastModified = obj.LastModified,
+                        Size = obj.Size ?? 0,
+                        LastModified = obj.LastModified ?? DateTime.UtcNow,
                         Url = $"https://{_bucketName}.s3.{_settings.Aws!.Region}.amazonaws.com/{obj.Key}",
                         ETag = obj.ETag
                     });
                 }
                 listRequest.ContinuationToken = response.NextContinuationToken;
-            } while (response.IsTruncated);
+            } while (response.IsTruncated ?? false);
 
             return blobs;
         }

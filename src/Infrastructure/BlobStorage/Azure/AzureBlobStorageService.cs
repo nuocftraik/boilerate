@@ -186,7 +186,7 @@ public class AzureBlobStorageService : IBlobStorageService
             }
 
             var blobs = new List<BlobModel>();
-            await foreach (var blobItem in containerClient.GetBlobsAsync(prefix: prefix, cancellationToken: cancellationToken))
+            await foreach (var blobItem in containerClient.GetBlobsAsync(traits: BlobTraits.None, states: BlobStates.None, prefix: prefix, cancellationToken: cancellationToken))
             {
                 var blobClient = containerClient.GetBlobClient(blobItem.Name);
                 blobs.Add(new BlobModel
